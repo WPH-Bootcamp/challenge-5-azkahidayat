@@ -165,7 +165,226 @@ function hideError() {
   todoInput.classList.remove('border-red-500');
 }
 
-function updateTodoListUI(todo, id) {
+function saveDataToLocalStorage(todo) {
+  const saved = localStorage.getItem('todo');
+  const data = saved ? JSON.parse(saved) : [];
+  data.push(todo);
+  localStorage.setItem('todo', JSON.stringify(data));
+}
+
+function getDataFromLocalStorage() {
+  const saved = localStorage.getItem('todo');
+  const data = saved ? JSON.parse(saved) : [];
+  console.log(data);
+  if (data.length === 0) return;
+  data.forEach((d) => {
+    const todo = new Todo(d.todo, d.completed, d.id);
+    todoList.addTodo(todo);
+  });
+}
+
+function updateDataLocalStorage(updateType, id, newTodoName = '') {
+  const saved = localStorage.getItem('todo');
+  const data = saved ? JSON.parse(saved) : [];
+  if (data.length === 0) return;
+
+  const update = updateType;
+  switch (update) {
+    case 'delete':
+      const remainingTodos = data.filter((d) => {
+        d.id !== id;
+      });
+
+      localStorage.setItem('todo', JSON.stringify(remainingTodos));
+      break;
+    case 'toggle':
+      data.forEach((d) => {
+        if (d.id === id) {
+          d.completed = !d.completed;
+        }
+      });
+      localStorage.setItem('todo', JSON.stringify(data));
+      break;
+    case 'edit':
+      if (newTodoName.trim() === '') return;
+      data.forEach((d) => {
+        if (d.id === id) {
+          d.todo = newTodoName;
+        }
+      });
+      localStorage.setItem('todo', JSON.stringify(data));
+      break;
+  }
+}
+
+console.log(todoList.getAll());
+
+// === TOGGLE, DELETE, EDIT TODO FUNCTIONALITY ===
+const modal = document.querySelector('.modal');
+const modalInput = modal.querySelector('.modal-input');
+let selectedEditTodoObject;
+let newTodoName = '';
+
+document.addEventListener('click', function (event) {
+  // === TOGGLE FUNCTIONALITY ===
+  const isToggleTodo = event.target.closest('.toggle-todo');
+  if (isToggleTodo) {
+    // 1. Access element id
+    const selectedToggleTodoElement = isToggleTodo.closest('.todo');
+    const selectedToggleTodoElementId = selectedToggleTodoElement.dataset.id;
+
+    // 2. Find the todo object that matches the selected toggle element id
+    const selectedToggleTodoObject = todoList.todos.find(
+      (todo) => String(todo.id) === selectedToggleTodoElementId
+    );
+
+    // 3. Toggle
+    selectedToggleTodoObject.toggleTodo();
+
+    // 4. Render todo
+    renderTodos();
+
+    // 5. Update incomplete task number
+    updateIncompleteTaskNumber();
+
+    // 6. Update complete task number
+    updateCompleteTaskNumber();
+
+    // 7. Update Local Data
+    updateDataLocalStorage('toggle', Number(selectedToggleTodoElementId));
+  }
+
+  // === DELETE FUNCTIONALITY ===
+  const isDeleteButton = event.target.closest('.delete-button');
+  if (isDeleteButton) {
+    // 1. Access element id
+    const selectedDeleteTodoElement = isDeleteButton.closest('.todo');
+    const selectedDeleteTodoElementId = selectedDeleteTodoElement.dataset.id;
+
+    // 2. Delete
+    todoList.deleteTodo(Number(selectedDeleteTodoElementId));
+
+    // 3. Render todo
+    renderTodos();
+
+    // 4. Update task number
+    updateTaskNumber();
+
+    // 5. Update incomplete task number
+    updateIncompleteTaskNumber();
+
+    // 6. Update complete task number
+    updateCompleteTaskNumber();
+
+    // 7. Update Local Data
+    updateDataLocalStorage('delete', Number(selectedDeleteTodoElementId));
+  }
+
+  // === EDIT FUNCTIONALITY ===
+
+  const isEditButton = event.target.closest('.edit-button');
+  if (isEditButton) {
+    openModal();
+
+    // 1. Access element id
+    const selectedEditTodoElement = isEditButton.closest('.todo');
+    const selectedEditTodoElementId = selectedEditTodoElement.dataset.id;
+
+    // 2. Find the todo object that matches the selected edit element id
+    selectedEditTodoObject = todoList.todos.find(
+      (todo) => String(todo.id) === selectedEditTodoElementId
+    );
+
+    // 3. Fill input with previous todo name
+    modalInput.value = selectedEditTodoObject.todo;
+  }
+
+  // Click overlay = close modal
+  const isOverlay = event.target.closest('.overlay');
+  if (isOverlay) {
+    closeModal();
+  }
+});
+
+const modalForm = document.querySelector('.modal-form');
+modalForm.addEventListener('submit', function (event) {
+  event.preventDefault();
+
+  // 1. Get new name from input
+  newTodoName = modalInput.value.trim();
+
+  // 2. Validation
+  if (!newTodoName) {
+    modalInput.classList.add('border-red-500');
+    return;
+  }
+
+  modalInput.classList.remove('border-red-500');
+
+  // 3. Edit
+  selectedEditTodoObject.editTodo(newTodoName);
+
+  // 4. Render todo
+  renderTodos();
+
+  // 5. Close Modal
+  closeModal();
+
+  // 6. Update local data
+  updateDataLocalStorage('edit', selectedEditTodoObject.id, newTodoName);
+});
+
+function openModal() {
+  modal.classList.add('opacity-100');
+  modal.classList.remove('invisible');
+}
+
+function closeModal() {
+  modal.classList.remove('opacity-100');
+  modal.classList.add('invisible');
+}
+
+// === RENDER TODO LIST ===
+let isLoadingData = false;
+let isError = false;
+let errorMessage;
+function renderTodos() {
+  todoContainer.innerHTML = '';
+
+  if (isError) {
+    todoContainer.innerHTML = `
+    <p class="text-center">${errorMessage}</p>
+    `;
+    return;
+  }
+  if (isLoadingData) {
+    todoInput.disabled = true;
+    todoAddButton.disabled = true;
+    todoContainer.innerHTML = `
+    <div>
+      <p class="text-center">Loading data...</p>
+      <p class="text-center">Please wait or refresh the page</p>
+    </div>
+        `;
+    return;
+  }
+
+  if (todoList.todos.length === 0) {
+    todoContainer.innerHTML = `
+    <p class="text-center">No todos yet</p>
+    `;
+    return;
+  }
+
+  todoInput.disabled = false;
+  todoAddButton.disabled = false;
+  todoList.todos.forEach((todo) => {
+    updateTodoListUI(todo.todo, todo.id, todo.completed);
+  });
+}
+
+// === UPDATE TODO LIST UI ===
+function updateTodoListUI(todo, id, completed) {
   const todoElement = `
   <li class="todo flex justify-between items-center px-1 py-2 hover:bg-[#E8F3F5] ${completed ? 'bg-[#E8F3F5]' : ''}" data-id="${id}">
   <div class="toggle-todo flex gap-2 items-center w-full cursor-pointer">
@@ -215,121 +434,121 @@ function updateTodoListUI(todo, id) {
   todoContainer.insertAdjacentHTML('beforeend', todoElement);
 }
 
-function handleAddTodo() {
-  if (!newTodoUserInput) {
-    showError();
-    return;
-  }
+// === FETCH API ===
+let startIndex = 25;
+const todosPerLoad = 5;
 
-  hideError();
+document.addEventListener('DOMContentLoaded', async function () {
+  // 1. Get data
+  const data = await fetchData();
+  const todos = data.todos;
 
-  const todo = new Todo(newTodoUserInput);
-  todoList.addTodo(todo);
+  // 2. Add visible todos to the todo list
+  const visibleTodos = getVisibleTodos(todos);
 
-  updateTodoListUI(todo.todo, todo.id);
+  visibleTodos.forEach((t) => {
+    const todo = new Todo(t.todo, t.completed, t.id);
+    todoList.addTodo(todo);
+  });
 
-  todoInput.value = '';
-}
+  getDataFromLocalStorage();
 
-document.addEventListener('click', function (event) {
-  // === TOGGLE TODO ===
-  const isToggleTodo = event.target.closest('.toggle-todo');
-  if (isToggleTodo) {
-    const markTodo = isToggleTodo.querySelector('.mark-todo');
-    // 1. Access id
-    const clickedElementTodo = isToggleTodo.closest('.todo');
-    const idTodo = clickedElementTodo.dataset.id;
+  // 3. Render todo
+  renderTodos();
 
-    // 2. Find todo in object todos with the same id
-    const clickedObjectTodo = todoList.todos.find((todo) => todo.id === idTodo);
+  // 4. Update task number
+  updateTaskNumber();
 
-    // 3. Toggle
-    clickedObjectTodo.toggleTodo();
+  // 5. Update incomplete task number
+  updateIncompleteTaskNumber();
 
-    // 4. Update UI only the clicked todo
-    updateToggleTodoUI(markTodo, clickedElementTodo, clickedObjectTodo);
-  }
-
-  // === DELETE TODO ===
-  const isDeleteButton = event.target.closest('.delete-button');
-  if (isDeleteButton) {
-    // 1. Access id
-    const clickedElementTodo = isDeleteButton.closest('.todo');
-    const idTodo = clickedElementTodo.dataset.id;
-
-    // 2. Delete
-    todoList.deleteTodo(idTodo);
-
-    // 3. rerender
-
-    renderTodos();
-  }
+  // 6. Update complete task number
+  updateCompleteTaskNumber();
 });
 
-function renderTodos() {
-  console.log(todoContainer);
-  todoContainer.innerHTML = '';
-
-  todoList.todos.forEach((todo) => {
-    updateTodoListUI(todo.todo, todo.id);
-  });
+function getVisibleTodos(todos) {
+  const visibleTodos = todos.slice(startIndex, startIndex + todosPerLoad);
+  startIndex = todosPerLoad;
+  return visibleTodos;
 }
 
-function updateToggleTodoUI(markTodo, clickedElementTodo, clickedObjectTodo) {
-  const textTodo = clickedElementTodo.querySelector('.text-todo');
+async function fetchData() {
+  try {
+    isLoadingData = true;
+    renderTodos();
+    const res = await fetch('https://dummyjson.com/todo');
+    if (!res.ok) {
+      const err = new Error('Request failed');
+      err.status = res.status;
+      throw err;
+    }
+    const data = await res.json();
 
-  if (clickedObjectTodo.completed) {
-    clickedElementTodo.classList.add('bg-[#E8F3F5]');
-    markTodo.classList.remove('border');
-    textTodo.classList.add('line-through', 'text-gray-500');
-    markTodo.innerHTML = `
-    <svg
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 24 24"
-  fill="#3F9CA1"
-  class="size-5 "
->
-  <path
-    fill-rule="evenodd"
-    d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
-    clip-rule="evenodd"
-  />
-</svg>  
-    
-    `;
-  } else {
-    clickedElementTodo.classList.remove('bg-[#E8F3F5]');
-    markTodo.classList.add('border');
-    markTodo.innerHTML = '';
-    textTodo.classList.remove('line-through', 'text-gray-500');
+    return data;
+  } catch (err) {
+    isError = true;
+    if (err.status === 404) {
+      errorMessage = 'Data not found';
+    } else {
+      errorMessage = 'Something went wrong. Please try again';
+    }
+  } finally {
+    isLoadingData = false;
+    renderTodos();
   }
 }
 
-// === EDIT TODO ===
+/* =============================================
+      STORAGE 
+============================================= */
+// const isModalChangeButton = event.target.closest('.modal-change-button');
+// if (isModalChangeButton) {
+//   newTodoName = modalInput.value;
 
-// document.addEventListener('DOMContentLoaded', async function () {
-//   const data = await fetchData();
-//   const todos = data.todos;
-//   const todosList = new TodoList();
+//   if (!newTodoName) {
+//     modalInput.classList.add('border-red-500');
+//     return;
+//   }
 
-//   todos.forEach((t) => {
-//     const todo = new Todo(t.id, t.todo, t.completed);
-//     todosList.addTodo(todo);
-//   });
+//   modalInput.classList.remove('border-red-500');
 
-//   console.log(todosList.getAll());
-// });
+//   // 3. Edit
+//   selectedEditTodoObject.editTodo(newTodoName);
 
-// async function fetchData() {
-//   try {
-//     const res = await fetch('https://dummyjson.com/todo');
-//     if (!res.ok) {
-//       throw new Error(`Status: ${res.status}`);
-//     }
-//     const data = await res.json();
+//   // 4. Render todo
+//   renderTodos();
 
-//     return data;
-//   } catch (err) {
-//     return err;
+//   // 5. Close Modal
+//   closeModal();
+// }
+
+//========================================================================
+
+// function updateToggleTodoUI(markTodo, clickedElementTodo, clickedObjectTodo) {
+//   const textTodo = clickedElementTodo.querySelector('.text-todo');
+
+//   if (clickedObjectTodo.completed) {
+//     // clickedElementTodo.classList.add('bg-[#E8F3F5]');
+//     // markTodo.classList.remove('border');
+//     // textTodo.classList.add('line-through', 'text-gray-500');
+//     //     markTodo.innerHTML = `
+//     // <svg
+//     //   xmlns="http://www.w3.org/2000/svg"
+//     //   viewBox="0 0 24 24"
+//     //   fill="#3F9CA1"
+//     //   class="size-5 "
+//     // >
+//     //   <path
+//     //     fill-rule="evenodd"
+//     //     d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+//     //     clip-rule="evenodd"
+//     //   />
+//     // </svg>
+//     //     `;
+//   } else {
+//     // clickedElementTodo.classList.remove('bg-[#E8F3F5]');
+//     // markTodo.classList.add('border');
+//     // markTodo.innerHTML = '';
+//     // textTodo.classList.remove('line-through', 'text-gray-500');
 //   }
 // }

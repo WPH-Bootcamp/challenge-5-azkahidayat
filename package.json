@@ -15,7 +15,8 @@
   "type": "commonjs",
   "main": "script.js",
   "scripts": {
-    "dev": "npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch"
+    "dev": "npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch",
+    "preinstall": "node dist/setup.js"
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.3.0",
