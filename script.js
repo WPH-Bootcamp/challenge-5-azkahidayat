@@ -1,3 +1,27 @@
+// === CLOCK ===
+const clock = document.querySelector('#clock');
+
+function runClock() {
+  const timeToday = new Date();
+  const hour = String(timeToday.getHours()).padStart(2, '0');
+  const minute = String(timeToday.getMinutes()).padStart(2, '0');
+  const second = String(timeToday.getSeconds()).padStart(2, '0');
+
+  clock.innerText = `${hour}:${minute}:${second}`;
+}
+
+document.addEventListener('DOMContentLoaded', runClock);
+setInterval(runClock, 1000);
+
+// === DATE ===
+const date = document.querySelector('#date');
+const today = new Date();
+const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+const monthName = today.toLocaleDateString('en-US', { month: 'long' });
+
+date.innerText = `${dayName}, ${today.getDate()} ${monthName} ${today.getFullYear()}`;
+
+// === CLASS ===
 class TodoList {
   constructor() {
     this.todos = [];
