@@ -7,7 +7,139 @@
     <link rel="stylesheet" href="./src/output.css" />
     <script src="./script.js" defer></script>
   </head>
-  <body>
-    <h1 class="text-amber-800 text-5xl">Simple ToDo List</h1>
+  <body
+    class="bg-[#d6dceb] flex flex-col items-center px-3 justify-center min-h-screen"
+  >
+    <div
+      class="rounded-lg w-full max-w-100 bg-white shadow-[0_0_5px_rgba(0,0,0,0.1)] overflow-hidden"
+    >
+      <div id="container" class="flex flex-col p-4 gap-5">
+        <!-- === 1. HEADER === -->
+        <header class="flex justify-between items-center">
+          <div>
+            <h1 class="text-xl font-semibold">Simple ToDo List</h1>
+            <p id="date" class="text-sm">Tuesday, 8 July 2025</p>
+          </div>
+          <p class="text-xs">5 Task Left</p>
+        </header>
+
+        <!-- === 2. MAIN === -->
+        <main class="flex flex-col gap-4">
+          <!-- 2.1 Form -->
+          <form class="flex justify-between gap-2">
+            <input
+              type="text"
+              placeholder="Add new task..."
+              class="w-full rounded-2xl border-2 border-[#3F9CA1] pl-2"
+            />
+            <button
+              class="flex min-w-25 text-sm items-center justify-center gap-1 p-2 rounded-lg bg-[#3F9CA1] text-white"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="size-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+              Add Task
+            </button>
+          </form>
+
+          <!-- 2.2 Todo List -->
+          <section id="todo-list">
+            <ul class="flex flex-col gap-4">
+              <!--  -->
+              <li class="flex justify-between items-center">
+                <div class="flex gap-2 items-center">
+                  <div class="size-4 rounded-md border"></div>
+                  <p>Morning Yoga & Meditation</p>
+                </div>
+                <div class="flex">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                    />
+                  </svg>
+
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                    />
+                  </svg>
+                </div>
+              </li>
+              <!--  -->
+              <li class="flex justify-between items-center">
+                <div class="flex gap-2 items-center">
+                  <div class="size-4 rounded-md border"></div>
+                  <p>Morning Jog & Meditation</p>
+                </div>
+                <div class="flex">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                    />
+                  </svg>
+
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                    />
+                  </svg>
+                </div>
+              </li>
+              <!--  -->
+            </ul>
+          </section>
+        </main>
+      </div>
+      <footer class="text-center p-2 bg-[#EEF2F4]">
+        &copy 2026 Created for WPH Challenge 5
+      </footer>
+    </div>
   </body>
 </html>
