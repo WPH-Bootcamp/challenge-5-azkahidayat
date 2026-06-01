@@ -65,33 +65,45 @@ const errorText = document.querySelector('#error-text');
 const todoContainer = document.querySelector('#todo-container');
 
 let newTodoUserInput = '';
-todoInput.addEventListener('change', function (event) {
-  newTodoUserInput = event.target.value.trim();
+
+todoInput.addEventListener('input', function (event) {
+  newTodoUserInput = todoInput.value.trim();
+});
+
+todoInput.addEventListener('keydown', function (event) {
+  event.key === 'Enter' && handleAddTodo();
 });
 
 todoAddButton.addEventListener('click', function () {
+  handleAddTodo();
+});
+
+function showError() {
+  errorText.classList.remove('invisible');
+  todoInput.classList.remove('border-[#3F9CA1]');
+  todoInput.classList.add('border-red-500');
+}
+
+function hideError() {
+  errorText.classList.add('invisible');
+  todoInput.classList.remove('border-red-500');
+}
+
+function handleAddTodo() {
   if (!newTodoUserInput) {
-    errorText.classList.remove('invisible');
-    todoInput.classList.remove('border-[#3F9CA1]');
-    todoInput.classList.add('border-red-500');
+    showError();
     return;
   }
-  errorText.classList.add('invisible');
-  todoInput.classList.add('border-[#3F9CA1]');
-  todoInput.classList.remove('border-red-500');
-  todoInput.value = '';
+
+  hideError();
 
   const todo = new Todo(newTodoUserInput);
   todoList.addTodo(todo);
 
-  todoList.todos.forEach((t) => {
-    const todo = t.todo;
-    const complete = t.complete;
-    const id = t.id;
+  updateUI(todo.todo);
 
-    updateUI(todo, complete, id);
-  });
-});
+  todoInput.value = '';
+}
 
 function updateUI(todo) {
   const todoElement = `
