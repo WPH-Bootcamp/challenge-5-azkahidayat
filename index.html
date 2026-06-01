@@ -53,16 +53,16 @@
                 <span id="task-number-text" class="py-1.5">Complete</span>
               </p>
 
-            <p
-              class="flex justify-center items-center text-xs md:text-sm rounded-full gap-1"
-            >
-              <span
-                id="task-number"
+              <p
+                class="flex justify-center items-center text-xs md:text-sm rounded-full gap-1"
+              >
+                <span
+                  id="task-number"
                   class="flex justify-center items-center rounded-full bg-[#3F9CA1] size-6 text-white"
                 ></span>
                 <span id="task-number-text" class="py-1.5">Task(s)</span>
-            </p>
-          </div>
+              </p>
+            </div>
           </div>
         </header>
 
@@ -115,6 +115,28 @@
       <footer class="text-center p-2 bg-[#EEF2F4]">
         &copy 2026 Created for WPH Challenge 5
       </footer>
+    </div>
+
+    <!-- ==================== MODAL ==================== -->
+    <div
+      class="modal z-5 transition-all duration-300 opacity-0 invisible fixed inset-0 flex justify-center items-center h-screen"
+    >
+      <div class="overlay absolute z-10 inset-0 bg-black/60"></div>
+      <form
+        class="modal-form relative z-20 max-w-80 w-full bg-white flex py-5 px-3 rounded-lg gap-2"
+      >
+        <input
+          type="text"
+          placeholder="Write new task name..."
+          class="modal-input w-full rounded-2xl border-2 border-[#3F9CA1] pl-3 md:py-2.5 md:rounded-3xl focus:outline-none focus:shadow-[0_0_5px_#3F9CA1] placeholder:text-gray-400"
+        />
+        <button
+          type="submit"
+          class="modal-change-button flex min-w-20 text-sm items-center justify-center gap-1 p-2 rounded-lg bg-[#3F9CA1] text-white cursor-pointer"
+        >
+          Change
+        </button>
+      </form>
     </div>
   </body>
 </html>
