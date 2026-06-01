@@ -1,0 +1,25 @@
+{
+  "name": "challenge-5-azkahidayat",
+  "version": "1.0.0",
+  "description": "[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/GmmSDIPy)\r # Assignment 5: To-Do App dengan Class, Async, dan DOM (atau CLI)",
+  "homepage": "https://github.com/WPH-Bootcamp/challenge-5-azkahidayat#readme",
+  "bugs": {
+    "url": "https://github.com/WPH-Bootcamp/challenge-5-azkahidayat/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WPH-Bootcamp/challenge-5-azkahidayat.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "script.js",
+  "scripts": {
+    "dev": "npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "tailwindcss": "^4.3.0"
+  },
+  "devDependencies": {}
+}
