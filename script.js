@@ -89,28 +89,12 @@ function hideError() {
   todoInput.classList.remove('border-red-500');
 }
 
-function handleAddTodo() {
-  if (!newTodoUserInput) {
-    showError();
-    return;
-  }
-
-  hideError();
-
-  const todo = new Todo(newTodoUserInput);
-  todoList.addTodo(todo);
-
-  updateUI(todo.todo);
-
-  todoInput.value = '';
-}
-
-function updateUI(todo) {
+function updateUI(todo, id) {
   const todoElement = `
-  <li class="flex justify-between items-center">
-  <div class="flex gap-2 items-center">
-    <div class="size-4 md:size-5 rounded-md border cursor-pointer"></div>
-    <p class="md:text-lg capitalize">${todo}</p>
+  <li class="todo flex justify-between items-center px-1 py-2" data-id=${id}>
+  <div class="toggle-todo flex gap-2 items-center w-full cursor-pointer">
+    <div class="mark-todo size-4 flex justify-center items-center md:size-5 rounded-md border cursor-pointer"></div>
+    <p class="text-todo md:text-lg capitalize pointer-events-none">${todo}</p>
   </div>
   <div class="flex gap-2">
     <svg
@@ -148,6 +132,75 @@ function updateUI(todo) {
   `;
   todoContainer.insertAdjacentHTML('beforeend', todoElement);
 }
+
+function handleAddTodo() {
+  if (!newTodoUserInput) {
+    showError();
+    return;
+  }
+
+  hideError();
+
+  const todo = new Todo(newTodoUserInput);
+  todoList.addTodo(todo);
+
+  updateUI(todo.todo, todo.id);
+
+  todoInput.value = '';
+}
+
+document.addEventListener('click', function (event) {
+  // === TOGGLE TODO ===
+  const isToggleTodo = event.target.closest('.toggle-todo');
+  if (isToggleTodo) {
+    const markTodo = isToggleTodo.querySelector('.mark-todo');
+    // 1. Access id
+    const clickedElementTodo = isToggleTodo.closest('.todo');
+    const idTodo = clickedElementTodo.dataset.id;
+
+    // 2. Find todo in object todos with the same id
+    const clickedObjectTodo = todoList.todos.find((todo) => todo.id === idTodo);
+
+    // 3. Toggle
+    clickedObjectTodo.toggleTodo();
+
+    // 4. Update UI only the clicked todo
+    updateToggleTodoUI(markTodo, clickedElementTodo, clickedObjectTodo);
+  }
+});
+
+function updateToggleTodoUI(markTodo, clickedElementTodo, clickedObjectTodo) {
+  const textTodo = clickedElementTodo.querySelector('.text-todo');
+
+  if (clickedObjectTodo.completed) {
+    clickedElementTodo.classList.add('bg-[#E8F3F5]');
+    markTodo.classList.remove('border');
+    textTodo.classList.add('line-through', 'text-gray-500');
+
+    markTodo.innerHTML = `
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  fill="#3F9CA1"
+  class="size-5"
+>
+  <path
+    fill-rule="evenodd"
+    d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+    clip-rule="evenodd"
+  />
+</svg>
+      `;
+  } else {
+    clickedElementTodo.classList.remove('bg-[#E8F3F5]');
+    markTodo.classList.add('border');
+    textTodo.classList.remove('line-through', 'text-gray-500');
+    markTodo.innerHTML = '';
+  }
+}
+
+// === DELETE TODO ===
+// === EDIT TODO ===
 
 // document.addEventListener('DOMContentLoaded', async function () {
 //   const data = await fetchData();
